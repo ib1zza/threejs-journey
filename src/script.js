@@ -1,6 +1,5 @@
 import "./style.css";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "lil-gui";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
@@ -90,9 +89,6 @@ camera.position.y = 1;
 camera.position.z = 2;
 scene.add(camera);
 
-// Controls
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
 
 // const axesHelper = new THREE.AxesHelper(2);
 // scene.add(axesHelper);
@@ -235,8 +231,7 @@ const tick = () => {
   group.rotation.y = elapsedTime / 2;
   //   group.rotation.x = elapsedTime / 2;
   //   group.rotation.z = elapsedTime /
-  // Update controls
-  controls.update();
+
   camera.updateProjectionMatrix();
 
   // Render
