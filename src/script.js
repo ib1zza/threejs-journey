@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "lil-gui";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { gsap } from "gsap";
 /**
  * Base
  */
@@ -79,7 +80,7 @@ window.addEventListener("resize", () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(
-  75,
+  25,
   sizes.width / sizes.height,
   0.1,
   100
@@ -207,6 +208,28 @@ camera.position.z = 0;
 camera.position.x = 0;
 camera.lookAt(0, 0, 0);
 
+function animateFov() {
+  gsap.to(camera, {
+    fov: 70,
+    duration: 6,
+    ease: "power2.inout",
+  });
+  console.log("animate");
+}
+
+const timeout = setTimeout(() => {
+  animateFov();
+}, 1000);
+
+window.addEventListener(
+  "mousemove",
+  () => {
+    clearTimeout(timeout);
+    animateFov();
+  },
+  { once: true }
+);
+
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   group.rotation.y = elapsedTime / 2;
@@ -214,6 +237,7 @@ const tick = () => {
   //   group.rotation.z = elapsedTime /
   // Update controls
   controls.update();
+  camera.updateProjectionMatrix();
 
   // Render
   renderer.render(scene, camera);
