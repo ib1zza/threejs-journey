@@ -1,5 +1,6 @@
 import "./style.css";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { gsap } from "gsap";
@@ -8,44 +9,11 @@ import { gsap } from "gsap";
  */
 // Debug
 
-
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
-
-/**
- * Lights
- */
-// Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-
-scene.add(ambientLight);
-
-// Directional light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(2, 2, -1);
-
-scene.add(directionalLight);
-
-/**
- * Materials
- */
-const material = new THREE.MeshStandardMaterial();
-material.roughness = 0.7;
-
-
-/**
- * Objects
- */
-// const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
-
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
-plane.rotation.x = -Math.PI * 0.5;
-plane.position.y = -0.5;
-
-// scene.add(sphere, plane);
 
 /**
  * Sizes
@@ -83,10 +51,11 @@ camera.position.x = 1;
 camera.position.y = 1;
 camera.position.z = 2;
 scene.add(camera);
+const group = new THREE.Group();
+// Controls
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
 
-
-// const axesHelper = new THREE.AxesHelper(2);
-// scene.add(axesHelper);
 /**
  * Renderer
  */
@@ -166,29 +135,46 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
     z: 0,
   });
   scene.add(text2);
+
+  const count = 80;
+  for (let i = 0; i < count; i++) {
+    const element = new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      triangleMaterial
+    );
+
+    arr.push(element);
+
+    element.rotation.y = (Math.PI * 2 * (count - i)) / count;
+
+    element.position.z = Math.sin((Math.PI * 2 * (count - i + 10)) / count);
+
+    element.position.x = -Math.cos((Math.PI * 2 * (count - i + 10)) / count);
+    //   element.position.z = Math.abs((i - 50) / 100);
+    group.add(element);
+    // console.log(element.rotation.y);
+  }
+
+  scene.add(group);
+
+  const timeout = setTimeout(() => {
+    animateFov();
+    window.removeEventListener("mousemove", animateFov);
+  }, 1000);
+
+  function animateFov() {
+    gsap.to(camera, {
+      fov: 70,
+      duration: 6,
+      ease: "power2.inout",
+    });
+    clearTimeout(timeout);
+    console.log("animate");
+  }
+
+  window.addEventListener("mousemove", animateFov, { once: true });
 });
 
-const group = new THREE.Group();
-const count = 80;
-for (let i = 0; i < count; i++) {
-  const element = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    triangleMaterial
-  );
-
-  arr.push(element);
-
-  element.rotation.y = (Math.PI * 2 * (count - i)) / count;
-
-  element.position.z = Math.sin((Math.PI * 2 * (count - i + 10)) / count);
-
-  element.position.x = -Math.cos((Math.PI * 2 * (count - i + 10)) / count);
-  //   element.position.z = Math.abs((i - 50) / 100);
-  group.add(element);
-  // console.log(element.rotation.y);
-}
-
-scene.add(group);
 /**
  * Animate
  */
@@ -199,34 +185,11 @@ camera.position.z = 0;
 camera.position.x = 0;
 camera.lookAt(0, 0, 0);
 
-function animateFov() {
-  gsap.to(camera, {
-    fov: 70,
-    duration: 6,
-    ease: "power2.inout",
-  });
-  console.log("animate");
-}
-
-const timeout = setTimeout(() => {
-  animateFov();
-}, 1000);
-
-window.addEventListener(
-  "mousemove",
-  () => {
-    clearTimeout(timeout);
-    animateFov();
-  },
-  { once: true }
-);
-
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   group.rotation.y = elapsedTime / 2;
-  //   group.rotation.x = elapsedTime / 2;
-  //   group.rotation.z = elapsedTime /
 
+  controls.update();
   camera.updateProjectionMatrix();
 
   // Render
