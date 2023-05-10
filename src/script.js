@@ -24,6 +24,7 @@ const particleTexture = textureLoader.load('/textures/particles/1.png')
 //  const particlesGeometry = new THREE.SphereGeometry(1, 32, 32);
  const particlesMaterial = new THREE.PointsMaterial({
     alphaMap: particleTexture,
+    alphaTest: 0.5,
     // sizeAttenuation: true,
     // alphaTest: 0.1,
     // depthTest: false,
@@ -32,12 +33,12 @@ const particleTexture = textureLoader.load('/textures/particles/1.png')
      vertexColors: true,
      transparent: true,
  })
- const count = 5000;
+ const count = 10000;
  const particlesGeometry = new THREE.BufferGeometry();
  let particlesArray = new Float32Array(count * 3);
 let colorsArray = new Float32Array(count * 3);
  for (let i = 0; i < count * 3; i++) {
-        particlesArray[i] = (Math.random() - 0.5) * 20
+        particlesArray[i] = (Math.random() - 0.5) * 40
         colorsArray[i] = 1
      }
 
@@ -111,7 +112,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 const clock = new THREE.Clock()
-
+console.log(particlesGeometry.attributes)
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime() * 2
@@ -120,12 +121,29 @@ const tick = () =>
     {
         const i3 = i * 3
         const x  =  particlesGeometry.attributes.position.array[i3]
+        // console.log(x)
+
+        const y  =  particlesGeometry.attributes.position.array[i3 + 1]
         const z  =  particlesGeometry.attributes.position.array[i3 + 2]
         // particlesGeometry.attributes.position.array[i3] = x + Math.sin(elapsedTime ) /20
         // particlesGeometry.attributes.position.array[i3 + 2] = z + Math.sin(elapsedTime   ) /20
-        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x ) / 2
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x) / 2
+        
         // particlesGeometry.attributes.position.array[i3 + 2] = Math.sin(elapsedTime )
         particlesGeometry.attributes.position.needsUpdate = true
+
+
+        const col = y + 0.7 > 0 ? y + 0.7 : 0;
+        particlesGeometry.attributes.color.array[i3] = col;
+        particlesGeometry.attributes.color.array[i3 + 1] = col;
+        particlesGeometry.attributes.color.array[i3 + 2] = col;
+        particlesGeometry.attributes.color.needsUpdate = true
+
+        if(i < 10) {
+            // console.log(col)
+        }
+
+        // particlesMaterial.attributes.color = 0;
     }
     // Update controls
     controls.update()
