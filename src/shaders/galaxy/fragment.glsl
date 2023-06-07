@@ -1,0 +1,19 @@
+varying vec3 vColor;
+
+void main () {
+
+    // circle pattern
+    // float strength = distance(gl_PointCoord, vec2(0.5, 0.5));
+    // strength = step(0.5, strength);
+    // strength = 1.0 - strength;
+
+    // diffuse circle pattern
+    // float strength = (1.0 - distance(gl_PointCoord, vec2(0.5, 0.5)) * 2.0);
+
+    // light point pattern
+    float strength = 1.0 - distance(gl_PointCoord, vec2(0.5, 0.5));
+    strength = pow(strength, 10.0);
+
+    vec3 color = mix(vec3(0.0), vColor, strength);
+    gl_FragColor = vec4(color, 1.0);
+}
