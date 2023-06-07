@@ -7,3 +7,5 @@ https://peaceful-souffle-4749dc.netlify.app/ - haunted house
 https://amazing-fudge-f3afb8.netlify.app/ - galaxy generator
 
 https://melodious-pasca-ad494b.netlify.app - waves generator 
+
+https://gilded-jelly-d08b97.netlify.app - animated galaxy
