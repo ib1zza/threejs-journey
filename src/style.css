@@ -29,9 +29,9 @@ button {
     font-family: 'Montserrat', sans-serif;
     font-size: 100px;
     font-weight: 600px;
-    color: white;
     padding: 20px;
     background-color: transparent;
     border: none;
+    color: transparent;
     transition: all 0.2s ease-in-out;
 }
