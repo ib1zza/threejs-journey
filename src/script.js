@@ -8,6 +8,8 @@ import gsap from "gsap";
 
 const duration = 0.5;
  
+
+
 /**
  * Base
  */
@@ -100,6 +102,21 @@ const material = new THREE.ShaderMaterial({
         uMultiplierElevation: { value: 0 },
     }
 })
+
+if(window.location.hash == '#debug')
+{
+    const gui = new dat.GUI();
+    
+    gui.add(material.uniforms.uSize, 'value').min(0).max(10).step(0.001).name('point size')
+    gui.add(material.uniforms.uColorOffset, 'value').min(0).max(1).step(0.001).name('color offset')
+    gui.add(material.uniforms.uColorMultiplier, 'value').min(0).max(10).step(0.001).name('color multiplier')
+
+    gui.add(material.uniforms.uSmallWavesElevation, 'value').min(0).max(10).step(0.001).name('small waves elevation')
+    gui.add(material.uniforms.uSmallWavesFrequency, 'value').min(0).max(10).step(0.001).name('small waves frequency')
+    gui.add(material.uniforms.uSmallWavesSpeed, 'value').min(0).max(10).step(0.001).name('small waves speed')
+    gui.add(material.uniforms.uSmallWavesIterations, 'value').min(0).max(10).step(0.001).name('small waves iterations')
+}
+
  
 /**
  * Points
@@ -159,28 +176,36 @@ const triangleMaterial = new THREE.ShaderMaterial({
     uniform float uOpacityMultiplier;
   
       void main() {
+        vec3 color = vec3(1.0) * uOpacityMultiplier;
+
         vec2 newUv = vUv;
-         newUv.y = newUv.y * newUv.y + 0.1;
-        vec3 color = vec3(newUv.y);
-        gl_FragColor = vec4( vec3(1.0) * uOpacityMultiplier, color  );
+        newUv.y = newUv.y * newUv.y + 0.1;
+
+        vec3 mul = vec3(newUv.y);
+
+        float strength = step(0.495, abs(vUv.x - 0.5)) + step(0.495, abs(vUv.y - 0.5)) ;
+
+        gl_FragColor = vec4( color, mul * strength );
       }
   
     `,
     uniforms: {
         uOpacityMultiplier: { value: 1 },
     },
-    wireframe: true,
+ 
     transparent: true,
     side: THREE.DoubleSide,
   });
   
 
 
+
+
 const count = 120;
-const multiplier = 0.15;
+const multiplier = 0.12;
 
 const sizeHeight = 1.0 * multiplier;
-const sizeWidth = 0.3 * multiplier;
+const sizeWidth = 0.5 * multiplier;
 
 
 const createRectangles = () => {
